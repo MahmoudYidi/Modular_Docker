@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Define the ROS 2 distribution
 DISTRO=humble
@@ -8,17 +9,17 @@ apt-get update
 
 # Install Gazebo and related ROS 2 packages
 apt-get install -y \
-    ros-$DISTRO-gazebo-ros-pkgs \
-    ros-$DISTRO-gazebo-ros2-control \
-    ros-$DISTRO-gazebo-ros \
-    ros-$DISTRO-gazebo-msgs \
-    ros-$DISTRO-ros2-control \
-    ros-$DISTRO-ros2-controllers \
-    ros-$DISTRO-robot-state-publisher \
-    ros-$DISTRO-joint-state-publisher \
-    ros-$DISTRO-joint-state-publisher-gui \
-    ros-$DISTRO-ros-bridge-server \
-    ros-$DISTRO-ros-gz \
+    ros-humble-gazebo-ros-pkgs \
+    ros-humble-gazebo-ros2-control \
+    ros-humble-gazebo-ros \
+    ros-humble-gazebo-msgs \
+    ros-humble-ros2-control \
+    ros-humble-ros2-controllers \
+    ros-humble-robot-state-publisher \
+    ros-humble-joint-state-publisher \
+    ros-humble-joint-state-publisher-gui \
+    ros-humble-ros-bridge-server \
+    ros-humble-ros-gz \
     gazebo11-plugin-base \
     gazebo11-common \
     gazebo11 \
