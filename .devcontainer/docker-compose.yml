@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  ubuntu_workspace:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: My Ubuntu
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+    command: /bin/bash
+    stdin_open: true
+    tty: true
+    network_mode: "host"  # Use the host network for GUI forwarding
+    privileged: true

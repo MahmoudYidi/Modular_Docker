@@ -1,0 +1,42 @@
+# Base image: Start with the official Ubuntu image. ROS 2 will be installed on top of this.
+FROM ubuntu:22.04
+
+# Set environment variables to avoid interactive prompts during package installations
+ENV DEBIAN_FRONTEND=noninteractive
+
+USER root
+
+# Copy the shell scripts into the container
+COPY ./install_dependencies.sh /tmp/install_dependencies.sh
+COPY ./repos.sh /tmp/repos.sh
+COPY ./ros_stuffs.sh /tmp/ros_stuffs.sh
+#COPY ./build_workspace.sh /tmp/build_workspace.sh
+
+# Make the scripts executable
+RUN chmod +x /tmp/*.sh
+
+# Run the scripts to install dependencies and set up the environment
+RUN /tmp/install_dependencies.sh
+RUN /tmp/ros_stuffs.sh
+RUN /tmp/repos.sh
+
+
+# Install rosdep dependencies
+RUN apt-get update && \
+    apt install --reinstall software-properties-common -y && \
+    apt-add-repository universe && \
+    apt-get update && \
+    rosdep install --from-paths src --ignore-src -r -y -v
+
+RUN if [ -f /etc/ros/rosdep/sources.list.d/20-default.list ]; then \
+        rm -f /etc/ros/rosdep/sources.list.d/20-default.list; \
+    fi
+
+# Initialize rosdep
+RUN rosdep init && rosdep update
+
+# Expose necessary ports for GUI and communication between host and container
+EXPOSE 11311 8080
+
+# Set up default command to source ROS 2 and workspace environment upon container start
+CMD ["/bin/bash", "-c", "source /opt/ros/${ROS_DISTRO}/setup.bash && source install/setup.bash && bash"]

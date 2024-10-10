@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="track_1">
+    <pose>0 0 0 0 0 0</pose>
+    <static>true</static>
+    <link name="body">
+      <visual name="visual">
+        <geometry>
+          <mesh><uri>model://track_1/media/track_1.dae</uri></mesh>
+          <scale>0.5 0.5 0.5</scale>
+        </geometry>
+	      <material>
+          <script>
+            <uri>model://track_1/media/scripts</uri>
+            <uri>model://track_1/media/Textures</uri>
+            <name>RepeatedGrass/Diffuse</name>
+          </script>
+        </material>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <mesh><uri>model://track_1/media/track_1.dae</uri></mesh>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>

@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="husky">
+  <!-- robot name parameter -->
+  <!-- <xacro:arg name="name" default="" /> -->
+
+  <xacro:arg name="prefix" default="" />
+  <xacro:arg name="gazebo_controllers" default="$(find husky_control)/config/control.yaml" />
+  <xacro:arg name="is_sim" default="true" />
+  
+  <xacro:include filename="$(find husky_description)/urdf/husky_macro.urdf.xacro" />
+
+  <!-- Load husky description -->
+  <xacro:husky prefix="$(arg prefix)" />
+
+  <!-- RealSense D435 Camera -->
+  <link name="realsense_link">
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.05 0.1 0.05"/>
+      </geometry>
+      <material name="Gray">
+        <color rgba="0.8 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.1 0.05 0.05"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+  <joint name="realsense_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="realsense_link"/>
+    <origin xyz="0.4 0 0.28" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Camera sensor plugin for RGB camera -->
+ 
+  <gazebo reference="$(arg prefix)realsense_link">
+    <sensor name="$(arg prefix)realsense_rgb_camera" type="camera">
+      <pose>0 0 0 0 0 0</pose>
+      <camera>
+        <horizontal_fov>1.047</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.01</near>
+          <far>10</far>
+        </clip>
+      </camera>
+      <update_rate>30.0</update_rate>
+      <plugin filename="libgazebo_ros_camera.so" name="$(arg prefix)camera_controller">
+        <always_on>true</always_on>
+        <update_rate>30.0</update_rate>
+        <camera_name>realsense_rgb_camera</camera_name>
+        <frame_name>realsense_link</frame_name>
+        <ros>
+          <namespace>$(arg prefix)</namespace>
+          <remapping>~/out:=/realsense/color/image_raw</remapping>
+        </ros>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- Depth camera plugin -->
+  <gazebo>
+    <sensor type="depth" name="realsense_depth_camera">
+      <pose>0 0 0 0 0 0</pose>
+      <camera>
+        <horizontal_fov>1.047</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.01</near>
+          <far>10</far>
+        </clip>
+      </camera>
+      <update_rate>30.0</update_rate>
+      <plugin name="depth_camera_controller" filename="libgazebo_ros_depth_camera.so">
+        <always_on>true</always_on>
+        <update_rate>30.0</update_rate>
+        <camera_name>realsense_depth_camera</camera_name>
+        <frame_name>realsense_link</frame_name>
+        <ros>
+          <namespace>$(arg prefix)/camera</namespace>
+          <remapping>depth/image_raw:=/$(arg prefix)/camera/depth/image_raw</remapping>
+          <remapping>depth/points:=/$(arg prefix)/camera/depth/points</remapping>
+        </ros>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+
+  <!-- Existing Gazebo plugins for Husky -->
+  <xacro:if value="$(arg is_sim)">
+    <gazebo>
+      <plugin name="$(arg prefix)gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+        <parameters>$(arg gazebo_controllers)</parameters>
+      </plugin>
+    </gazebo>
+
+    <gazebo reference="$(arg prefix)imu_link">
+      <sensor name="$(arg prefix)imu_sensor" type="imu">
+        <plugin filename="libgazebo_ros_imu_sensor.so" name="$(arg prefix)imu_plugin">
+          <ros>
+            <namespace>$(arg prefix)</namespace>
+            <remapping>~/out:=imu/data_raw</remapping>
+          </ros>
+          <initial_orientation_as_reference>false</initial_orientation_as_reference>
+        </plugin>
+        <always_on>true</always_on>
+        <update_rate>100</update_rate>
+        <visualize>true</visualize>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="$(arg prefix)gps_link">
+      <sensor name="$(arg prefix)gps_sensor" type="gps">
+        <plugin filename="libgazebo_ros_gps_sensor.so" name="$(arg prefix)gps_plugin">
+          <ros>
+            <namespace>$(arg prefix)</namespace>
+            <remapping>~/out:=gps/data</remapping>
+          </ros>
+        </plugin>
+        <always_on>true</always_on>
+        <update_rate>10</update_rate>
+      </sensor>
+    </gazebo>
+  </xacro:if>
+
+  <!-- Optional custom includes. -->
+  <xacro:include filename="$(arg urdf_extras)" />
+
+</robot>
