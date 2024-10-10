@@ -4,10 +4,10 @@
 DISTRO=humble
 
 # Update package list
-sudo apt update
+apt-get update
 
 # Install Gazebo and related ROS 2 packages
-sudo apt install -y \
+apt-get install -y \
     ros-$DISTRO-gazebo-ros-pkgs \
     ros-$DISTRO-gazebo-ros2-control \
     ros-$DISTRO-gazebo-ros \
@@ -17,16 +17,15 @@ sudo apt install -y \
     ros-$DISTRO-robot-state-publisher \
     ros-$DISTRO-joint-state-publisher \
     ros-$DISTRO-joint-state-publisher-gui \
-    ros-$DISTRO-ros-bridge-server
-
-# Install Gazebo model packages (optional)
-sudo apt install -y \
+    ros-$DISTRO-ros-bridge-server \
+    ros-$DISTRO-ros-gz \
     gazebo11-plugin-base \
     gazebo11-common \
     gazebo11 \
-    gazebo11-sim
+    gazebo11-sim \
+    && rm -rf /var/lib/apt/lists/*
 
 # Clean up
-sudo apt autoremove -y
+apt-get autoremove -y
 
 echo "ROS 2 Gazebo installation complete."
