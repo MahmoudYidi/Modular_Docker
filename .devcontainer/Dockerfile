@@ -17,8 +17,8 @@ COPY ./gazebo_setup.sh /tmp/install_ros2_gazebo.sh
 RUN chmod +x /tmp/*.sh
 
 #GUI
-#COPY GUI.sh /usr/local/bin/gui_support.sh
-#RUN chmod +x /usr/local/bin/gui_support.sh
+COPY GUI.sh /usr/local/bin/gui_support.sh
+RUN chmod +x /usr/local/bin/gui_support.sh
 
 RUN /tmp/install_dependencies.sh
 RUN /tmp/ros_stuffs.sh
@@ -33,5 +33,5 @@ RUN /tmp/install_ros2_gazebo.sh
 #WORKDIR /home/user
 
 # Setup entrypoint
-CMD ["/bin/bash"]
-#CMD ["/usr/local/bin/gui_support.sh", "/bin/bash"] #GUI
+#CMD ["/bin/bash"]
+CMD ["/usr/local/bin/gui_support.sh", "/bin/bash"] #GUI
